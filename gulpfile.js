@@ -11,7 +11,8 @@ var gulp          = require('gulp'),
 var paths = {
   appJavascript:    ['app/js/app.js', 'app/js/**/*.js'],
   appTemplates:     'app/js/**/**.tpl.html',
-  appSass:          'app/scss/main.scss',
+  appMainSass:      'app/scss/main.scss',
+  appStyles:        'app/scss/**/*.scss',
   indexHtml:        'app/index.html',
   vendorJavascript: ['vendor/js/angular.js', 'vendor/js/**/*.js'],
   tmpFolder:        '.tmp',
@@ -27,7 +28,7 @@ gulp.task('scripts', function() {
 });
 
 gulp.task('styles', function() {
-  return gulp.src(paths.appSass)
+  return gulp.src(paths.appMainSass)
     .pipe(sass())
     .pipe(rename('app.css'))
     .pipe(gulp.dest(paths.tmpCss))
@@ -42,6 +43,16 @@ gulp.task('clean', function() {
   return gulp.src(paths.tmpFolder)
     .pipe(rimraf());
 });
+
+gulp.task('watch', function() {
+  gulp.watch(paths.appJavascript, ['scripts']);
+  gulp.watch(paths.appTemplates, ['scripts']);
+  gulp.watch(paths.vendorJavascript, ['scripts']);
+  gulp.watch(paths.indexHtml, ['indexHtml']);
+  gulp.watch(paths.appStyles, ['styles']);
+});
+
+gulp.task('default', ['scripts', 'styles', 'indexHtml', 'watch']);
 
 function buildTemplates() {
   return es.pipeline(
