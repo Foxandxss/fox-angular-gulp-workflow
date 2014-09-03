@@ -10,6 +10,7 @@ var gulp          = require('gulp'),
     ngAnnotate    = require('gulp-ng-annotate'),
     uglify        = require('gulp-uglify'),
     minifyCSS     = require('gulp-minify-css'),
+    webserver     = require('gulp-webserver'),
     argv          = require('yargs').argv;
 
 var paths = {
@@ -32,7 +33,7 @@ gulp.task('scripts', function() {
     .pipe(gulpif(/html$/, buildTemplates()))
     .pipe(concat('app.js'))
     .pipe(gulpif(argv.production, ngAnnotate()))
-    .pipe(gulpif(argv.production, doUglify()))
+    .pipe(gulpif(argv.production, uglify()))
     .pipe(gulpif(argv.production, gulp.dest(paths.distJavascript), gulp.dest(paths.tmpJavascript)));
 });
 
@@ -40,7 +41,7 @@ gulp.task('styles', function() {
   return gulp.src(paths.appMainSass)
     .pipe(sass())
     .pipe(gulpif(argv.production, minifyCSS()))
-    .pipe(gulpif(argv.production, rename('app.min.css'), rename('app.css')))
+    .pipe(rename('app.css'))
     .pipe(gulpif(argv.production, gulp.dest(paths.distCss), gulp.dest(paths.tmpCss)));
 });
 
@@ -54,12 +55,19 @@ gulp.task('clean', function() {
     .pipe(rimraf());
 });
 
-gulp.task('watch', ['scripts', 'styles', 'indexHtml'], function() {
+gulp.task('watch', ['webserver'], function() {
   gulp.watch(paths.appJavascript, ['scripts']);
   gulp.watch(paths.appTemplates, ['scripts']);
   gulp.watch(paths.vendorJavascript, ['scripts']);
   gulp.watch(paths.indexHtml, ['indexHtml']);
   gulp.watch(paths.appStyles, ['styles']);
+});
+
+gulp.task('webserver', ['scripts', 'styles', 'indexHtml'], function() {
+  gulp.src(paths.tmpFolder)
+    .pipe(webserver({
+      port: 5000
+    }));
 });
 
 gulp.task('default', ['scripts', 'styles', 'indexHtml']);
@@ -72,12 +80,5 @@ function buildTemplates() {
       quotes: true
     }),
     templateCache()
-  );
-}
-
-function doUglify() {
-  return es.pipeline(
-    uglify(),
-    rename('app.min.js')
   );
 }
