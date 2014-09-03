@@ -66,7 +66,12 @@ gulp.task('watch', ['webserver'], function() {
 gulp.task('webserver', ['scripts', 'styles', 'indexHtml'], function() {
   gulp.src(paths.tmpFolder)
     .pipe(webserver({
-      port: 5000
+      port: 5000,
+      proxies: [
+        {
+          source: '/api', target: 'http://localhost:8080/api'
+        }
+      ]
     }));
 });
 
