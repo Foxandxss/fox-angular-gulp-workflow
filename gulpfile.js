@@ -6,7 +6,11 @@ var gulp          = require('gulp'),
     minifyHtml    = require('gulp-minify-html'),
     es            = require('event-stream'),
     sass          = require('gulp-sass'),
-    rename        = require('gulp-rename');
+    rename        = require('gulp-rename'),
+    ngAnnotate    = require('gulp-ng-annotate'),
+    uglify        = require('gulp-uglify'),
+    minifyCSS     = require('gulp-minify-css'),
+    argv          = require('yargs').argv;
 
 var paths = {
   appJavascript:    ['app/js/app.js', 'app/js/**/*.js'],
@@ -17,34 +21,40 @@ var paths = {
   vendorJavascript: ['vendor/js/angular.js', 'vendor/js/**/*.js'],
   tmpFolder:        '.tmp',
   tmpJavascript:    '.tmp/js',
-  tmpCss:           '.tmp/css'
+  tmpCss:           '.tmp/css',
+  distFolder:       'dist',
+  distJavascript:   'dist/js',
+  distCss:          'dist/css'
 };
 
 gulp.task('scripts', function() {
   return gulp.src(paths.vendorJavascript.concat(paths.appJavascript, paths.appTemplates))
     .pipe(gulpif(/html$/, buildTemplates()))
     .pipe(concat('app.js'))
-    .pipe(gulp.dest(paths.tmpJavascript));
+    .pipe(gulpif(argv.production, ngAnnotate()))
+    .pipe(gulpif(argv.production, doUglify()))
+    .pipe(gulpif(argv.production, gulp.dest(paths.distJavascript), gulp.dest(paths.tmpJavascript)));
 });
 
 gulp.task('styles', function() {
   return gulp.src(paths.appMainSass)
     .pipe(sass())
-    .pipe(rename('app.css'))
-    .pipe(gulp.dest(paths.tmpCss))
+    .pipe(gulpif(argv.production, minifyCSS()))
+    .pipe(gulpif(argv.production, rename('app.min.css'), rename('app.css')))
+    .pipe(gulpif(argv.production, gulp.dest(paths.distCss), gulp.dest(paths.tmpCss)));
 });
 
 gulp.task('indexHtml', function() {
   return gulp.src(paths.indexHtml)
-    .pipe(gulp.dest(paths.tmpFolder))
+    .pipe(gulpif(argv.production, gulp.dest(paths.distFolder), gulp.dest(paths.tmpFolder)))
 });
 
 gulp.task('clean', function() {
-  return gulp.src(paths.tmpFolder)
+  return gulp.src([paths.tmpFolder, paths.distFolder], {read: false})
     .pipe(rimraf());
 });
 
-gulp.task('watch', function() {
+gulp.task('watch', ['scripts', 'styles', 'indexHtml'], function() {
   gulp.watch(paths.appJavascript, ['scripts']);
   gulp.watch(paths.appTemplates, ['scripts']);
   gulp.watch(paths.vendorJavascript, ['scripts']);
@@ -52,7 +62,7 @@ gulp.task('watch', function() {
   gulp.watch(paths.appStyles, ['styles']);
 });
 
-gulp.task('default', ['scripts', 'styles', 'indexHtml', 'watch']);
+gulp.task('default', ['scripts', 'styles', 'indexHtml']);
 
 function buildTemplates() {
   return es.pipeline(
@@ -62,5 +72,12 @@ function buildTemplates() {
       quotes: true
     }),
     templateCache()
+  );
+}
+
+function doUglify() {
+  return es.pipeline(
+    uglify(),
+    rename('app.min.js')
   );
 }
