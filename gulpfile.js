@@ -20,6 +20,7 @@ var paths = {
   appStyles:        'app/scss/**/*.scss',
   indexHtml:        'app/index.html',
   vendorJavascript: ['vendor/js/angular.js', 'vendor/js/**/*.js'],
+  vendorCss:        ['vendor/css/**/*.css'],
   tmpFolder:        '.tmp',
   tmpJavascript:    '.tmp/js',
   tmpCss:           '.tmp/css',
@@ -38,10 +39,10 @@ gulp.task('scripts', function() {
 });
 
 gulp.task('styles', function() {
-  return gulp.src(paths.appMainSass)
-    .pipe(sass())
+  return gulp.src(paths.vendorCss.concat(paths.appMainSass))
+    .pipe(gulpif(/scss$/, sass()))
+    .pipe(concat('app.css'))
     .pipe(gulpif(argv.production, minifyCSS()))
-    .pipe(rename('app.css'))
     .pipe(gulpif(argv.production, gulp.dest(paths.distCss), gulp.dest(paths.tmpCss)));
 });
 
