@@ -47,7 +47,7 @@ gulp.task('styles', function() {
 
 gulp.task('indexHtml', function() {
   return gulp.src(paths.indexHtml)
-    .pipe(gulpif(argv.production, gulp.dest(paths.distFolder), gulp.dest(paths.tmpFolder)))
+    .pipe(gulpif(argv.production, gulp.dest(paths.distFolder), gulp.dest(paths.tmpFolder)));
 });
 
 gulp.task('clean', function() {
@@ -84,6 +84,8 @@ function buildTemplates() {
       spare: true,
       quotes: true
     }),
-    templateCache()
+    templateCache({
+      module: 'app'
+    })
   );
 }
