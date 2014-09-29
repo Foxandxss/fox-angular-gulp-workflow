@@ -15,7 +15,7 @@ var gulp          = require('gulp'),
 
 var paths = {
   appJavascript:    ['app/js/app.js', 'app/js/**/*.js'],
-  appTemplates:     'app/js/**/**.tpl.html',
+  appTemplates:     'app/js/**/*.tpl.html',
   appMainSass:      'app/scss/main.scss',
   appStyles:        'app/scss/**/*.scss',
   indexHtml:        'app/index.html',
