@@ -20,6 +20,7 @@ var paths = {
   appTemplates:     'app/js/**/*.tpl.html',
   appMainSass:      'app/scss/main.scss',
   appStyles:        'app/scss/**/*.scss',
+  appImages:        'app/images/**/*',
   indexHtml:        'app/index.html',
   vendorJavascript: ['vendor/js/angular.js', 'vendor/js/**/*.js'],
   vendorCss:        ['vendor/css/**/*.css'],
@@ -27,9 +28,11 @@ var paths = {
   tmpFolder:        'tmp',
   tmpJavascript:    'tmp/js',
   tmpCss:           'tmp/css',
+  tmpImages:        'tmp/images',
   distFolder:       'dist',
   distJavascript:   'dist/js',
-  distCss:          'dist/css'
+  distCss:          'dist/css',
+  distImages:       'dist/images'
 };
 
 gulp.task('scripts', function() {
@@ -47,6 +50,11 @@ gulp.task('styles', function() {
     .pipe(concat('app.css'))
     .pipe(gulpif(argv.production, minifyCSS()))
     .pipe(gulpif(argv.production, gulp.dest(paths.distCss), gulp.dest(paths.tmpCss)));
+});
+
+gulp.task('images', function() {
+  return gulp.src(paths.appImages)
+    .pipe(gulpif(argv.production, gulp.dest(paths.distImages), gulp.dest(paths.tmpImages)));
 });
 
 gulp.task('indexHtml', function() {
@@ -76,12 +84,13 @@ gulp.task('watch', ['webserver'], function() {
   gulp.watch(paths.appJavascript, ['lint', 'scripts']);
   gulp.watch(paths.appTemplates, ['scripts']);
   gulp.watch(paths.vendorJavascript, ['scripts']);
+  gulp.watch(paths.appImages, ['images']);
   gulp.watch(paths.specFolder, ['lint']);
   gulp.watch(paths.indexHtml, ['indexHtml']);
   gulp.watch(paths.appStyles, ['styles']);
 });
 
-gulp.task('webserver', ['scripts', 'styles', 'indexHtml'], function() {
+gulp.task('webserver', ['scripts', 'styles', 'images', 'indexHtml'], function() {
   gulp.src(paths.tmpFolder)
     .pipe(webserver({
       port: 5000,
