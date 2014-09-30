@@ -11,6 +11,7 @@ var gulp          = require('gulp'),
     uglify        = require('gulp-uglify'),
     minifyCSS     = require('gulp-minify-css'),
     webserver     = require('gulp-webserver'),
+    testem        = require('gulp-testem'),
     argv          = require('yargs').argv;
 
 var paths = {
@@ -21,9 +22,10 @@ var paths = {
   indexHtml:        'app/index.html',
   vendorJavascript: ['vendor/js/angular.js', 'vendor/js/**/*.js'],
   vendorCss:        ['vendor/css/**/*.css'],
-  tmpFolder:        '.tmp',
-  tmpJavascript:    '.tmp/js',
-  tmpCss:           '.tmp/css',
+  specFolder:       ['spec/**/*_spec.js'],
+  tmpFolder:        'tmp',
+  tmpJavascript:    'tmp/js',
+  tmpCss:           'tmp/css',
   distFolder:       'dist',
   distJavascript:   'dist/js',
   distCss:          'dist/css'
@@ -51,6 +53,13 @@ gulp.task('indexHtml', function() {
     .pipe(gulpif(argv.production, gulp.dest(paths.distFolder), gulp.dest(paths.tmpFolder)));
 });
 
+gulp.task('testem', function() {
+  return gulp.src(['']) // We don't need files, that is managed on testem.json
+    .pipe(testem({
+      configFile: 'testem.json'
+    }));
+});
+
 gulp.task('clean', function() {
   return gulp.src([paths.tmpFolder, paths.distFolder], {read: false})
     .pipe(rimraf());
@@ -76,7 +85,7 @@ gulp.task('webserver', ['scripts', 'styles', 'indexHtml'], function() {
     }));
 });
 
-gulp.task('default', ['scripts', 'styles', 'indexHtml']);
+gulp.task('default', ['watch']);
 
 function buildTemplates() {
   return es.pipeline(
