@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "A workflow for Angular made with Gulp",
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp testem"
   },
   "repository": {
     "type": "git",
