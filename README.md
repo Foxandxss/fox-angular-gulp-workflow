@@ -5,7 +5,7 @@ Here is *yet another angular boilerplate* opinionated in how I work with Angular
 
 Let's start with the `app` folder:
 
-IMAGE
+![App folder](http://i.imgur.com/Fppy0Ge.png)
 
 In the `app` folder you can find 3 subdirectories:
 
@@ -21,7 +21,7 @@ You can also find:
 
 We split our application per features, so if we have an application to manage `users`, we can decide that a page to manage those `users` is a feature and also the `settings` page is another feature. Also we need some authentication services and stuff like that. That is not a feature of our app, but something **common** to the entire app. How can we organize that?
 
-IMAGE
+![App structure](http://i.imgur.com/IPu6rL5.png)
 
 Looking at the image, we can see that `apps` folder where we put all our features. We create a subdirectory with the feature name and then inside a `javascript` file to code that feature and also a `.tpl.html` file for its template. the `.tpl.html` is my convention, you can change that in the `gulpfile.js`.
 
