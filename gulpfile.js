@@ -6,6 +6,7 @@ var gulp          = require('gulp'),
     minifyHtml    = require('gulp-minify-html'),
     es            = require('event-stream'),
     sass          = require('gulp-sass'),
+    jshint        = require('gulp-jshint'),
     rename        = require('gulp-rename'),
     ngAnnotate    = require('gulp-ng-annotate'),
     uglify        = require('gulp-uglify'),
@@ -53,6 +54,12 @@ gulp.task('indexHtml', function() {
     .pipe(gulpif(argv.production, gulp.dest(paths.distFolder), gulp.dest(paths.tmpFolder)));
 });
 
+gulp.task('lint', function() {
+  return gulp.src(paths.appJavascript.concat(paths.specFolder))
+    .pipe(jshint())
+    .pipe(jshint.reporter('jshint-stylish'));
+});
+
 gulp.task('testem', function() {
   return gulp.src(['']) // We don't need files, that is managed on testem.json
     .pipe(testem({
@@ -66,9 +73,10 @@ gulp.task('clean', function() {
 });
 
 gulp.task('watch', ['webserver'], function() {
-  gulp.watch(paths.appJavascript, ['scripts']);
+  gulp.watch(paths.appJavascript, ['lint', 'scripts']);
   gulp.watch(paths.appTemplates, ['scripts']);
   gulp.watch(paths.vendorJavascript, ['scripts']);
+  gulp.watch(paths.specFolder, ['lint']);
   gulp.watch(paths.indexHtml, ['indexHtml']);
   gulp.watch(paths.appStyles, ['styles']);
 });
