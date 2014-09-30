@@ -9,9 +9,9 @@ Let's start with the `app` folder:
 
 In the `app` folder you can find 3 subdirectories:
 
-**images**: You can put there the images you need, nothing special here.
-**scss**: There is a `main.scss` file there were you import all your other `.scss` files.
-**js**: There is where you put your javascript code. It comes with a `app.js` file with the main `app` module created.
+* **images**: You can put there the images you need, nothing special here.
+* **scss**: There is a `main.scss` file there were you import all your other `.scss` files.
+* **js**: There is where you put your javascript code. It comes with a `app.js` file with the main `app` module created.
 
 You can also find:
 
