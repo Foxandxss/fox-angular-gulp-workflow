@@ -22,8 +22,13 @@ var paths = {
   appStyles:        'app/scss/**/*.scss',
   appImages:        'app/images/**/*',
   indexHtml:        'app/index.html',
-  vendorJavascript: ['vendor/js/angular.js', 'vendor/js/**/*.js'],
-  vendorCss:        ['vendor/css/**/*.css'],
+  vendorJavascript: [
+    'vendor/angular/angular.js',
+    'vendor/lodash/dist/lodash.js'
+  ],
+  vendorCss:        [
+
+  ],
   specFolder:       ['spec/**/*_spec.js'],
   tmpFolder:        'tmp',
   tmpJavascript:    'tmp/js',
