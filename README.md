@@ -124,7 +124,6 @@ For now, all the vendors you need are pulled manually to `/vendor`. I am not a b
 
 ## TODO
 
-* Sourcemaps
 * Compile the project without watching it afterwards.
 * Fix possible issues, this need to be used on real projects yet :P
 * Anything you want?
