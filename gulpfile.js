@@ -24,27 +24,13 @@ var paths = {
   distImages:       'dist/images'
 };
 
-gulp.task('scripts', ['scripts-app'], function() {
-  return gulp.src(paths.vendorJavascript.concat(paths.tmpAppJs))
+gulp.task('scripts', function() {
+  return gulp.src(paths.vendorJavascript.concat(paths.appJavascript, paths.appTemplates))
+    .pipe(plugins.if(/html$/, buildTemplates()))
     .pipe(plugins.concat('app.js'))
+    .pipe(plugins.if(argv.production, plugins.ngAnnotate()))
     .pipe(plugins.if(argv.production, plugins.uglify()))
     .pipe(plugins.if(argv.production, gulp.dest(paths.distJavascript), gulp.dest(paths.tmpJavascript)));
-});
-
-gulp.task('scripts-app', ['templates'], function() {
-  return gulp.src(paths.appJavascript.concat(paths.tmpAppJs))
-    .pipe(plugins.sourcemaps.init())
-    .pipe(plugins.concat('app.js'))
-    .pipe(plugins.sourcemaps.write())
-    .pipe(plugins.if(argv.production, plugins.ngAnnotate()))
-    .pipe(gulp.dest(paths.tmpJavascript));
-});
-
-gulp.task('templates', function() {
-  return gulp.src(paths.appTemplates)
-    .pipe(buildTemplates())
-    .pipe(plugins.rename('app.js'))
-    .pipe(gulp.dest(paths.tmpJavascript));
 });
 
 gulp.task('styles', function() {
