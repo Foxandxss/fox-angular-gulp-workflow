@@ -77,6 +77,7 @@ gulp.task('watch', ['webserver'], function() {
   gulp.watch(paths.specFolder, ['lint']);
   gulp.watch(paths.indexHtml, ['indexHtml']);
   gulp.watch(paths.appStyles, ['styles']);
+  gulp.watch(paths.vendorCss, ['styles']);
 });
 
 gulp.task('webserver', ['scripts', 'styles', 'images', 'indexHtml'], function() {
