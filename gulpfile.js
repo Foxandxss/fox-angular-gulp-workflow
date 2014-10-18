@@ -1,7 +1,10 @@
 var gulp    = require('gulp');
 var plugins = require('gulp-load-plugins')();
 var es      = require('event-stream');
-var argv    = require('yargs').argv;
+
+var config = {
+  development: true
+};
 
 var paths = {
   appJavascript:    ['app/js/app.js', 'app/js/**/*.js'],
@@ -27,10 +30,12 @@ var paths = {
 gulp.task('scripts', function() {
   return gulp.src(paths.vendorJavascript.concat(paths.appJavascript, paths.appTemplates))
     .pipe(plugins.if(/html$/, buildTemplates()))
+    .pipe(plugins.if(config.development, plugins.sourcemaps.init()))
     .pipe(plugins.concat('app.js'))
-    .pipe(plugins.if(argv.production, plugins.ngAnnotate()))
-    .pipe(plugins.if(argv.production, plugins.uglify()))
-    .pipe(plugins.if(argv.production, gulp.dest(paths.distJavascript), gulp.dest(paths.tmpJavascript)))
+    .pipe(plugins.if(config.development, plugins.sourcemaps.write('.')))
+    .pipe(plugins.if(!config.development, plugins.ngAnnotate()))
+    .pipe(plugins.if(!config.development, plugins.uglify()))
+    .pipe(plugins.if(config.development, gulp.dest(paths.tmpJavascript), gulp.dest(paths.distJavascript)))
     .pipe(plugins.connect.reload());
 });
 
@@ -38,20 +43,20 @@ gulp.task('styles', function() {
   return gulp.src(paths.vendorCss.concat(paths.appMainSass))
     .pipe(plugins.if(/scss$/, plugins.sass()))
     .pipe(plugins.concat('app.css'))
-    .pipe(plugins.if(argv.production, plugins.minifyCss()))
-    .pipe(plugins.if(argv.production, gulp.dest(paths.distCss), gulp.dest(paths.tmpCss)))
+    .pipe(plugins.if(!config.development, plugins.minifyCss()))
+    .pipe(plugins.if(config.development, gulp.dest(paths.tmpCss), gulp.dest(paths.distCss)))
     .pipe(plugins.connect.reload());
 });
 
 gulp.task('images', function() {
   return gulp.src(paths.appImages)
-    .pipe(plugins.if(argv.production, gulp.dest(paths.distImages), gulp.dest(paths.tmpImages)))
+    .pipe(plugins.if(config.development, gulp.dest(paths.tmpImages), gulp.dest(paths.distImages)))
     .pipe(plugins.connect.reload());
 });
 
 gulp.task('indexHtml', function() {
   return gulp.src(paths.indexHtml)
-    .pipe(plugins.if(argv.production, gulp.dest(paths.distFolder), gulp.dest(paths.tmpFolder)))
+    .pipe(plugins.if(config.development, gulp.dest(paths.tmpFolder), gulp.dest(paths.distFolder)))
     .pipe(plugins.connect.reload());
 });
 
@@ -101,7 +106,12 @@ gulp.task('webserver', ['scripts', 'styles', 'images', 'indexHtml'], function() 
   });
 });
 
+gulp.task('set-production', function() {
+  config.development = false;
+});
+
 gulp.task('default', ['watch']);
+gulp.task('production', ['set-production', 'scripts', 'styles', 'images', 'indexHtml']);
 
 function buildTemplates() {
   return es.pipeline(

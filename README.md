@@ -113,7 +113,7 @@ That will fire `test'em` which will grab all our changes and re-run the tests.
 When you finish your project and you need to generate the final result with all your assets minified and your Angular annotated (for minification purposes), you can do:
 
 ```
-$ gulp --production
+$ gulp production
 ```
 
 That will generate a `dist` folder and you can safely move its content to a backend `/public` folder or serve it as is.
@@ -124,8 +124,6 @@ For now, all the vendors you need are pulled manually to `/vendor`. I am not a b
 
 ## TODO
 
-* Sourcemaps
 * Proxying for sockets
-* Compile the project without watching it afterwards.
 * Fix possible issues, this need to be used on real projects yet :P
 * Anything you want?
