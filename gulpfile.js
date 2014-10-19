@@ -1,6 +1,7 @@
-var gulp    = require('gulp');
-var plugins = require('gulp-load-plugins')();
-var es      = require('event-stream');
+var gulp               = require('gulp');
+var plugins            = require('gulp-load-plugins')();
+var es                 = require('event-stream');
+var historyApiFallback = require('connect-history-api-fallback');
 
 var config = {
   development: true
@@ -101,7 +102,7 @@ gulp.task('webserver', ['scripts', 'styles', 'images', 'indexHtml'], function() 
             var options = url.parse('http://localhost:8080/api');
             options.route = '/api';
             return proxy(options);
-        })() ];
+        })(), historyApiFallback ];
     }
   });
 });
