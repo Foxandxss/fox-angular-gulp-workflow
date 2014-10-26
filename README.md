@@ -122,6 +122,10 @@ That will generate a `dist` folder and you can safely move its content to a back
 
 For now, all the vendors you need are pulled manually to `/vendor`. I am not a big fan of `bower` but I will consider it if there is any request.
 
+## Known Issues
+
+Sometimes when adding new files (and the watch is running) you can see errors regarding sourcemaps. A restart of gulp fix that.
+
 ## TODO
 
 * Proxying for sockets
