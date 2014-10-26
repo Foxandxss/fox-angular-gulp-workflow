@@ -1,11 +1,10 @@
 # Fox's Angular.js Gulp Workflow
----
 
 Here is *yet another angular boilerplate* opinionated in how I work with Angular. I made it for myself but if you find that my opinions are good for you, feel free to use it and collaborate with issues or pull requests.
 
 Let's start with the `app` folder:
 
-![App folder](http://i.imgur.com/Fppy0Ge.png)
+![App folder](http://i.imgur.com/X6unV4p.png)
 
 In the `app` folder you can find 3 subdirectories:
 
@@ -15,15 +14,15 @@ In the `app` folder you can find 3 subdirectories:
 
 You can also find:
 
-**index.html**: It is only the basic skeleton with the angular application loaded.
+**index.hbs**: It is only the basic skeleton with the angular application loaded. It uses `handlebars` so we can have cache-busting on production.
 
 ## Structuring your Angular app in the `js` folder.
 
-We split our application per features, so if we have an application to manage `users`, we can decide that a page to manage those `users` is a feature and also the `settings` page is another feature. Also we need some authentication services and stuff like that. That is not a feature of our app, but something **common** to the entire app. How can we organize that?
+We split our application per `features`, so if we have an application to manage `users`, we can decide that a page to manage those `users` is a feature and also the `settings` page is another feature. Also we need some authentication services and stuff like that. That is not a feature of our app, but something **common** to the entire app. How can we organize that?
 
-![App structure](http://i.imgur.com/IPu6rL5.png)
+![App structure](http://i.imgur.com/RtlhXuE.png)
 
-Looking at the image, we can see that `apps` folder where we put all our features. We create a subdirectory with the feature name and then inside a `javascript` file to code that feature and also a `.tpl.html` file for its template. the `.tpl.html` is my convention, you can change that in the `gulpfile.js`.
+Looking at the image, we can see that `features` folder where we put all our features. We create a subdirectory with the feature name and then inside a `javascript` file to code that feature and also a `.tpl.html` file for its template. the `.tpl.html` is my convention, you can change that in the `gulpfile.js`.
 
 If a feature gets big enough, you can create multiple `.js` files, that is not a problem.
 
@@ -72,16 +71,21 @@ $http.get('/api/users');
 Without any need of `CORS`. Thanks to our `proxy`, our `Angular` app will think that the backend is running in the same domain and port so if we deploy both application together (like putting our `angular` app into `Rails'` `/public` directory) we don't need to change anything in our code.
 
 ```javascript
-gulp.task('webserver', ['scripts', 'styles', 'images', 'indexHtml'], function() {
-  gulp.src(paths.tmpFolder)
-    .pipe(webserver({
-      port: 5000,
-      proxies: [
-        {
-          source: '/api', target: 'http://localhost:8080/api'
-        }
-      ]
-    }));
+gulp.task('webserver', ['indexHtml-dev', 'images-dev'], function() {
+  plugins.connect.server({
+    root: paths.tmpFolder,
+    port: 5000,
+    livereload: true,
+    middleware: function(connect, o) {
+        return [ (function() {
+            var url = require('url');
+            var proxy = require('proxy-middleware');
+            var options = url.parse('http://localhost:8080/api');
+            options.route = '/api';
+            return proxy(options);
+        })(), historyApiFallback ];
+    }
+  });
 });
 ```
 
@@ -97,7 +101,7 @@ $ gulp
 
 That will generate a `tmp` folder with all our `javascript` files concatenated in one central place. That free us of having to create a `<script>` tag for every javascript we create. Also, our `templates` are going to be cached in `$templateCache` and also appended to the main `app.js` file.
 
-Also that will compile our `scss`, move our images and `index.html`, run the webserver and watch for file changes.
+Also that will compile our `scss`, move our images and compile our `index.hbs`, run the webserver and watch for file changes.
 
 All our `javascript` are going to be linted by `jshint`.
 
