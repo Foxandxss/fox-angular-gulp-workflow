@@ -1,10 +1,15 @@
 var gulp               = require('gulp');
+var fs                 = require('fs');
 var plugins            = require('gulp-load-plugins')();
 var es                 = require('event-stream');
 var historyApiFallback = require('connect-history-api-fallback');
 
-var config = {
-  development: true
+var handlebarOpts = {
+  helpers: {
+        assetPath: function (path, context) {
+            return context.data.root[path];
+        }
+    }
 };
 
 var paths = {
@@ -13,9 +18,11 @@ var paths = {
   appMainSass:      'app/scss/main.scss',
   appStyles:        'app/scss/**/*.scss',
   appImages:        'app/images/**/*',
-  indexHtml:        'app/index.html',
+  indexHbs:         'app/index.hbs',
   vendorJavascript: ['vendor/js/angular.js', 'vendor/js/**/*.js'],
   vendorCss:        ['vendor/css/**/*.css'],
+  finalAppJsPath:   '/js/app.js',
+  finalAppCssPath:  '/css/app.css',
   specFolder:       ['spec/**/*_spec.js'],
   tmpFolder:        'tmp',
   tmpJavascript:    'tmp/js',
@@ -25,40 +32,88 @@ var paths = {
   distFolder:       'dist',
   distJavascript:   'dist/js',
   distCss:          'dist/css',
-  distImages:       'dist/images'
+  distImages:       'dist/images',
+  distJsManifest:   'dist/js/rev-manifest.json',
+  distCssManifest:  'dist/css/rev-manifest.json'
 };
 
-gulp.task('scripts', function() {
+gulp.task('scripts-dev', function() {
   return gulp.src(paths.vendorJavascript.concat(paths.appJavascript, paths.appTemplates))
     .pipe(plugins.if(/html$/, buildTemplates()))
-    .pipe(plugins.if(config.development, plugins.sourcemaps.init()))
+    .pipe(plugins.sourcemaps.init())
     .pipe(plugins.concat('app.js'))
-    .pipe(plugins.if(config.development, plugins.sourcemaps.write('.')))
-    .pipe(plugins.if(!config.development, plugins.ngAnnotate()))
-    .pipe(plugins.if(!config.development, plugins.uglify()))
-    .pipe(plugins.if(config.development, gulp.dest(paths.tmpJavascript), gulp.dest(paths.distJavascript)))
+    .pipe(plugins.sourcemaps.write('.'))
+    .pipe(gulp.dest(paths.tmpJavascript))
     .pipe(plugins.connect.reload());
 });
+gulp.task('scripts-prod', function() {
+  return gulp.src(paths.vendorJavascript.concat(paths.appJavascript, paths.appTemplates))
+    .pipe(plugins.if(/html$/, buildTemplates()))
+    .pipe(plugins.concat('app.js'))
+    .pipe(plugins.ngAnnotate())
+    .pipe(plugins.uglify())
+    .pipe(plugins.rev())
+    .pipe(gulp.dest(paths.distJavascript))
+    .pipe(plugins.rev.manifest({path: 'rev-manifest.json'}))
+    .pipe(gulp.dest(paths.distJavascript));
+});
 
-gulp.task('styles', function() {
+gulp.task('styles-dev', function() {
   return gulp.src(paths.vendorCss.concat(paths.appMainSass))
     .pipe(plugins.if(/scss$/, plugins.sass()))
     .pipe(plugins.concat('app.css'))
-    .pipe(plugins.if(!config.development, plugins.minifyCss()))
-    .pipe(plugins.if(config.development, gulp.dest(paths.tmpCss), gulp.dest(paths.distCss)))
+    .pipe(gulp.dest(paths.tmpCss))
     .pipe(plugins.connect.reload());
 });
 
-gulp.task('images', function() {
+gulp.task('styles-prod', function() {
+  return gulp.src(paths.vendorCss.concat(paths.appMainSass))
+    .pipe(plugins.if(/scss$/, plugins.sass()))
+    .pipe(plugins.concat('app.css'))
+    .pipe(plugins.minifyCss())
+    .pipe(plugins.rev())
+    .pipe(gulp.dest(paths.distCss))
+    .pipe(plugins.rev.manifest({path: 'rev-manifest.json'}))
+    .pipe(gulp.dest(paths.distCss));
+});
+
+gulp.task('images-dev', function() {
   return gulp.src(paths.appImages)
-    .pipe(plugins.if(config.development, gulp.dest(paths.tmpImages), gulp.dest(paths.distImages)))
+    .pipe(gulp.dest(paths.tmpImages))
     .pipe(plugins.connect.reload());
 });
 
-gulp.task('indexHtml', function() {
-  return gulp.src(paths.indexHtml)
-    .pipe(plugins.if(config.development, gulp.dest(paths.tmpFolder), gulp.dest(paths.distFolder)))
+gulp.task('images-prod', function() {
+  return gulp.src(paths.appImages)
+    .pipe(gulp.dest(paths.distImages));
+});
+
+gulp.task('indexHtml-dev', ['scripts-dev', 'styles-dev'], function() {
+  var manifest = {};
+
+  manifest[paths.finalAppJsPath]  = paths.finalAppJsPath;
+  manifest[paths.finalAppCssPath] = paths.finalAppCssPath;
+
+  return gulp.src(paths.indexHbs)
+    .pipe(plugins.compileHandlebars(manifest, handlebarOpts))
+    .pipe(plugins.rename('index.html'))
+    .pipe(gulp.dest(paths.tmpFolder))
     .pipe(plugins.connect.reload());
+});
+
+gulp.task('indexHtml-prod', ['scripts-prod', 'styles-prod'], function() {
+  var jsManifest  = JSON.parse(fs.readFileSync(paths.distJsManifest, 'utf8'));
+  var cssManifest = JSON.parse(fs.readFileSync(paths.distCssManifest, 'utf8'));
+
+  var manifest = {};
+
+  manifest[paths.finalAppJsPath]  = jsManifest['app.js'];
+  manifest[paths.finalAppCssPath] = cssManifest['app.css'];
+
+  return gulp.src(paths.indexHbs)
+    .pipe(plugins.compileHandlebars(manifest, handlebarOpts))
+    .pipe(plugins.rename('index.html'))
+    .pipe(gulp.dest(paths.distFolder));
 });
 
 gulp.task('lint', function() {
@@ -90,7 +145,7 @@ gulp.task('watch', ['webserver'], function() {
   gulp.watch(paths.vendorCss, ['styles']);
 });
 
-gulp.task('webserver', ['scripts', 'styles', 'images', 'indexHtml'], function() {
+gulp.task('webserver', ['indexHtml-dev', 'images-dev'], function() {
   plugins.connect.server({
     root: paths.tmpFolder,
     port: 5000,
@@ -107,12 +162,8 @@ gulp.task('webserver', ['scripts', 'styles', 'images', 'indexHtml'], function() 
   });
 });
 
-gulp.task('set-production', function() {
-  config.development = false;
-});
-
 gulp.task('default', ['watch']);
-gulp.task('production', ['set-production', 'scripts', 'styles', 'images', 'indexHtml']);
+gulp.task('production', ['scripts-prod', 'styles-prod', 'images-prod', 'indexHtml-prod']);
 
 function buildTemplates() {
   return es.pipeline(
