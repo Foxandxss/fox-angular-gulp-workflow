@@ -2,6 +2,7 @@ var gulp               = require('gulp');
 var fs                 = require('fs');
 var plugins            = require('gulp-load-plugins')();
 var es                 = require('event-stream');
+var del                = require('del');
 var historyApiFallback = require('connect-history-api-fallback');
 
 var handlebarOpts = {
@@ -129,9 +130,8 @@ gulp.task('testem', function() {
     }));
 });
 
-gulp.task('clean', function() {
-  return gulp.src([paths.tmpFolder, paths.distFolder], {read: false})
-    .pipe(plugins.rimraf());
+gulp.task('clean', function(cb) {
+  del([paths.tmpFolder, paths.distFolder], cb);
 });
 
 gulp.task('watch', ['webserver'], function() {
