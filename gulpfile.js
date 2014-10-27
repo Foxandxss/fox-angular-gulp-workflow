@@ -126,14 +126,14 @@ gulp.task('clean', function(cb) {
 });
 
 gulp.task('watch', ['webserver'], function() {
-  gulp.watch(paths.appJavascript, ['lint', 'scripts']);
-  gulp.watch(paths.appTemplates, ['scripts']);
-  gulp.watch(paths.vendorJavascript, ['scripts']);
-  gulp.watch(paths.appImages, ['images']);
+  gulp.watch(paths.appJavascript, ['lint', 'scripts-dev']);
+  gulp.watch(paths.appTemplates, ['scripts-dev']);
+  gulp.watch(paths.vendorJavascript, ['scripts-dev']);
+  gulp.watch(paths.appImages, ['images-dev']);
   gulp.watch(paths.specFolder, ['lint']);
-  gulp.watch(paths.indexHtml, ['indexHtml']);
-  gulp.watch(paths.appStyles, ['styles']);
-  gulp.watch(paths.vendorCss, ['styles']);
+  gulp.watch(paths.indexHtml, ['indexHtml-dev']);
+  gulp.watch(paths.appStyles, ['styles-dev']);
+  gulp.watch(paths.vendorCss, ['styles-dev']);
 });
 
 gulp.task('webserver', ['indexHtml-dev', 'images-dev'], function() {
