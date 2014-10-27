@@ -4,7 +4,7 @@ Here is *yet another angular boilerplate* opinionated in how I work with Angular
 
 Let's start with the `app` folder:
 
-![App folder](http://i.imgur.com/X6unV4p.png)
+![App folder](http://i.imgur.com/Fppy0Ge.png)
 
 In the `app` folder you can find 3 subdirectories:
 
@@ -14,7 +14,7 @@ In the `app` folder you can find 3 subdirectories:
 
 You can also find:
 
-**index.hbs**: It is only the basic skeleton with the angular application loaded. It uses `handlebars` so we can have cache-busting on production.
+**index.html**: It is only the basic skeleton with the angular application loaded. It is a `lodash template` so we can have cache-busting on production.
 
 ## Structuring your Angular app in the `js` folder.
 
