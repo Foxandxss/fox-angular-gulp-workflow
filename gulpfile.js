@@ -5,21 +5,13 @@ var es                 = require('event-stream');
 var del                = require('del');
 var historyApiFallback = require('connect-history-api-fallback');
 
-var handlebarOpts = {
-  helpers: {
-        assetPath: function (path, context) {
-            return context.data.root[path];
-        }
-    }
-};
-
 var paths = {
   appJavascript:    ['app/js/app.js', 'app/js/**/*.js'],
   appTemplates:     'app/js/**/*.tpl.html',
   appMainSass:      'app/scss/main.scss',
   appStyles:        'app/scss/**/*.scss',
   appImages:        'app/images/**/*',
-  indexHbs:         'app/index.hbs',
+  indexHtml:        'app/index.html',
   vendorJavascript: ['vendor/js/angular.js', 'vendor/js/**/*.js'],
   vendorCss:        ['vendor/css/**/*.css'],
   finalAppJsPath:   '/js/app.js',
@@ -90,14 +82,13 @@ gulp.task('images-prod', function() {
 });
 
 gulp.task('indexHtml-dev', ['scripts-dev', 'styles-dev'], function() {
-  var manifest = {};
+  var manifest = {
+    js: paths.finalAppJsPath,
+    css: paths.finalAppCssPath
+  };
 
-  manifest[paths.finalAppJsPath]  = paths.finalAppJsPath;
-  manifest[paths.finalAppCssPath] = paths.finalAppCssPath;
-
-  return gulp.src(paths.indexHbs)
-    .pipe(plugins.compileHandlebars(manifest, handlebarOpts))
-    .pipe(plugins.rename('index.html'))
+  return gulp.src(paths.indexHtml)
+    .pipe(plugins.template({css: manifest['css'], js: manifest['js']}))
     .pipe(gulp.dest(paths.tmpFolder))
     .pipe(plugins.connect.reload());
 });
@@ -106,13 +97,13 @@ gulp.task('indexHtml-prod', ['scripts-prod', 'styles-prod'], function() {
   var jsManifest  = JSON.parse(fs.readFileSync(paths.distJsManifest, 'utf8'));
   var cssManifest = JSON.parse(fs.readFileSync(paths.distCssManifest, 'utf8'));
 
-  var manifest = {};
+  var manifest = {
+    js: jsManifest['app.js'],
+    css: cssManifest['app.css']
+  };
 
-  manifest[paths.finalAppJsPath]  = jsManifest['app.js'];
-  manifest[paths.finalAppCssPath] = cssManifest['app.css'];
-
-  return gulp.src(paths.indexHbs)
-    .pipe(plugins.compileHandlebars(manifest, handlebarOpts))
+  return gulp.src(paths.indexHtml)
+    .pipe(plugins.template({css: manifest['css'], js: manifest['js']}))
     .pipe(plugins.rename('index.html'))
     .pipe(gulp.dest(paths.distFolder));
 });
