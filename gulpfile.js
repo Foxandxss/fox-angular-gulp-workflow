@@ -98,8 +98,8 @@ gulp.task('indexHtml-prod', ['scripts-prod', 'styles-prod'], function() {
   var cssManifest = JSON.parse(fs.readFileSync(paths.distCssManifest, 'utf8'));
 
   var manifest = {
-    js: jsManifest['app.js'],
-    css: cssManifest['app.css']
+    js: '/js/' + jsManifest['app.js'],
+    css: '/css/' + cssManifest['app.css']
   };
 
   return gulp.src(paths.indexHtml)
