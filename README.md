@@ -48,7 +48,7 @@ As a test runner we are using `test'em`, `jasmine 2` as the framework of choice 
   "launch_in_dev" : ["Chrome"],
   "src_files" : [
     "tmp/js/app.js",
-    "spec/helpers/angular-mocks.js",
+    "vendor/angular-mocks/angular-mocks.js",
     "spec/**/*_spec.js"
   ]
 }
@@ -124,7 +124,37 @@ That will generate a `dist` folder and you can safely move its content to a back
 
 ## Managing vendors
 
-For now, all the vendors you need are pulled manually to `/vendor`. I am not a big fan of `bower` but I will consider it if there is any request.
+For the vendors this workflow uses `bower`.
+
+All the bower packages are installed directly on `/vendor` so if you want to install `angular-toastr` for example, you only need to:
+
+```
+$ bower install angular-toastr --save
+```
+
+That will install `angular-toastr` on `/vendor` and also save it on the `bower.json`.
+
+Then you will need to tell `Gulp` that you want to load it, for that you need to open `/vendor/manifest.js` and modify it like:
+
+```javascript
+exports.javascript = [
+  'vendor/angular/angular.js',
+  'vendor/lodash/dist/lodash.js',
+  'vendor/angular-toastr/dist/angular-toastr.js'
+];
+```
+
+There is also a `css` array:
+
+```javascript
+exports.css = [
+
+];
+```
+
+By default this project comes with `angular` and `lodash` already loaded for you.
+
+**NOTE**: `npm install` will also do a `bower install`.
 
 ## Known Issues
 
@@ -133,5 +163,6 @@ Sometimes when adding new files (and the watch is running) you can see errors re
 ## TODO
 
 * Proxying for sockets
+* If you add new stuff to `/vendor/manifest.js` you will need to restart `Gulp`.
 * Fix possible issues, this need to be used on real projects yet :P
 * Anything you want?

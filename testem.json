@@ -3,7 +3,7 @@
   "launch_in_dev" : ["Chrome"],
   "src_files" : [
     "tmp/js/app.js",
-    "spec/helpers/angular-mocks.js",
+    "vendor/angular-mocks/angular-mocks.js",
     "spec/**/*_spec.js"
   ]
 }

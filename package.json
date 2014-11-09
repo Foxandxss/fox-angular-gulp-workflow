@@ -1,8 +1,9 @@
 {
   "name": "fox-angular-gulp-workflow",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A workflow for Angular made with Gulp",
   "scripts": {
+    "install": "bower install",
     "test": "gulp testem"
   },
   "repository": {

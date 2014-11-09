@@ -5,6 +5,8 @@ var es                 = require('event-stream');
 var del                = require('del');
 var historyApiFallback = require('connect-history-api-fallback');
 
+var vendor             = require('./vendor/manifest');
+
 var paths = {
   appJavascript:    ['app/js/app.js', 'app/js/**/*.js'],
   appTemplates:     'app/js/**/*.tpl.html',
@@ -12,8 +14,8 @@ var paths = {
   appStyles:        'app/scss/**/*.scss',
   appImages:        'app/images/**/*',
   indexHtml:        'app/index.html',
-  vendorJavascript: ['vendor/js/angular.js', 'vendor/js/**/*.js'],
-  vendorCss:        ['vendor/css/**/*.css'],
+  vendorJavascript: vendor.javascript,
+  vendorCss:        vendor.css,
   finalAppJsPath:   '/js/app.js',
   finalAppCssPath:  '/css/app.css',
   specFolder:       ['spec/**/*_spec.js'],
