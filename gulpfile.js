@@ -144,13 +144,13 @@ gulp.task('webserver', ['indexHtml-dev', 'images-dev'], function() {
     port: 5000,
     livereload: true,
     middleware: function(connect, o) {
-        return [ (function() {
-            var url = require('url');
-            var proxy = require('proxy-middleware');
-            var options = url.parse('http://localhost:8080/api');
-            options.route = '/api';
-            return proxy(options);
-        })(), historyApiFallback ];
+      return [ (function() {
+        var url = require('url');
+        var proxy = require('proxy-middleware');
+        var options = url.parse('http://localhost:8080/api');
+        options.route = '/api';
+        return proxy(options);
+      })(), historyApiFallback ];
     }
   });
 });
