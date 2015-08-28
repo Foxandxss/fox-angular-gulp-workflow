@@ -150,7 +150,7 @@ gulp.task('webserver', ['indexHtml-dev', 'images-dev'], function() {
         var options = url.parse('http://localhost:8080/api');
         options.route = '/api';
         return proxy(options);
-      })(), historyApiFallback ];
+      })(), historyApiFallback() ];
     }
   });
 });
