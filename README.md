@@ -1,6 +1,6 @@
 # Fox's Angular.js Gulp Workflow
 
-[![Dependency Status](https://david-dm.org/Foxandxss/fox-angular-gulp-workflow/status.svg)](https://david-dm.org/Foxandxss/fox-angular-gulp-workflow#info=dependencies) [![devDependency Status](https://david-dm.org/Foxandxss/fox-angular-gulp-workflow/dev-status.svg)](https://david-dm.org/Foxandxss/fox-angular-gulp-workflow#info=devDependencies)
+[![devDependency Status](https://david-dm.org/Foxandxss/fox-angular-gulp-workflow/dev-status.svg)](https://david-dm.org/Foxandxss/fox-angular-gulp-workflow#info=devDependencies)
 
 Here is *yet another opinionated angular boilerplate* with how I work with Angular. I made it for myself but if you find that my opinions are good for you, feel free to use it and collaborate with issues or pull requests.
 
