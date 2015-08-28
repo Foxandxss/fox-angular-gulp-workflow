@@ -6,3 +6,7 @@ exports.javascript = [
 exports.css = [
 
 ];
+
+exports.fonts = [
+
+];
