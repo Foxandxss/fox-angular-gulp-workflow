@@ -2,6 +2,8 @@
 
 [![devDependency Status](https://david-dm.org/Foxandxss/fox-angular-gulp-workflow/dev-status.svg)](https://david-dm.org/Foxandxss/fox-angular-gulp-workflow#info=devDependencies)
 
+**If you would like a modern workflow using ES6, use my [webpack boilerplate](https://github.com/Foxandxss/angular-webpack-workflow)**
+
 Here is *yet another opinionated angular boilerplate* with how I work with Angular. I made it for myself but if you find that my opinions are good for you, feel free to use it and collaborate with issues or pull requests.
 
 Let's start with the `app` folder:
