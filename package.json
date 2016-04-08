@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/Foxandxss/fox-angular-gulp-workflow",
   "devDependencies": {
-    "connect-history-api-fallback": "1.1.0",
+    "connect-history-api-fallback": "1.2.0",
     "del": "^2.2.0",
     "event-stream": "^3.1.7",
     "gulp": "^3.8.8",
