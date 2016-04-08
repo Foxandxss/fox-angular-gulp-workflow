@@ -68,7 +68,7 @@ gulp.task('styles-prod', function() {
   return gulp.src(paths.vendorCss.concat(paths.appMainSass))
     .pipe(plugins.if(/scss$/, plugins.sass()))
     .pipe(plugins.concat('app.css'))
-    .pipe(plugins.minifyCss())
+    .pipe(plugins.cleanCss())
     .pipe(plugins.rev())
     .pipe(gulp.dest(paths.distCss))
     .pipe(plugins.rev.manifest({path: 'rev-manifest.json'}))
